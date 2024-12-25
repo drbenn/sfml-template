@@ -27,7 +27,7 @@ int main()
 
     // Load the sound buffer
     sf::SoundBuffer buffer;
-    if (!buffer.loadFromFile("../assets/sound/billy9.mp3")) // Adjust path to your sound file
+    if (!buffer.loadFromFile("../assets/sounds/billy9.mp3")) // Adjust path to your sound file
     {
         std::cerr << "Failed to load sound!" << std::endl;
         return -1;
@@ -40,6 +40,24 @@ int main()
     auto startTime = std::chrono::steady_clock::now();
     bool soundPlayed = false;
 
+    // Load a texture
+    sf::Texture grassTexture("../assets/textures/texture grass 3.png");
+    // Enable repeating for the texture
+    grassTexture.setRepeated(true);
+    grassTexture.setSmooth(true);
+    sf::Sprite grassSprite(grassTexture);
+    grassSprite.setColor(sf::Color(0, 200, 100, 205));
+
+    // Define the size of the area to cover (half the screen)
+    sf::FloatRect screenBounds = window.getView().getViewport();
+    sf::Vector2u windowSize = window.getSize();
+
+    // Set the texture rectangle to cover half the screen
+    // (In this example, half the screen width and full height)
+    grassSprite.setTextureRect(sf::IntRect(
+        {0, 0},                                                                             // vector position
+        {static_cast<int>(window.getSize().x / 2), static_cast<int>(window.getSize().y)     // vector size
+    }));
 
     // run the program as long as the window is open
     while (window.isOpen())
@@ -79,6 +97,7 @@ int main()
         window.clear(sf::Color::Black);
 
         // draw everything here
+        window.draw(grassSprite);
         window.draw(text);
 
         // end the current frame
