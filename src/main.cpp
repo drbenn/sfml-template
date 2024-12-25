@@ -1,10 +1,45 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <iostream>
 
 int main()
 {
     // create the window
     auto window = sf::RenderWindow(sf::VideoMode({1920u, 1080u}), "Dan's CMake SFML Project");
     window.setFramerateLimit(144);
+
+    // Load a font
+    sf::Font font;
+    if (!font.openFromFile("../assets/fonts/excluded.ttf"))
+    {
+        std::cerr << "Failed to load font!" << std::endl;
+        return -1; // Exit if the font fails to load
+    }
+
+    // Create text object
+    sf::Text text(font);                                    // Set the font
+    text.setString("Billy's Hammer");                       // Set the text string
+    text.setCharacterSize(96);                              // Set the size of the text
+    text.setFillColor(sf::Color::Blue);                     // Set the text color
+    text.setStyle(sf::Text::Bold | sf::Text::Underlined);   // set the text style
+    text.setPosition({100.f,100.f});                        // Set the position on the window
+
+
+    // Load the sound buffer
+    sf::SoundBuffer buffer;
+    if (!buffer.loadFromFile("../assets/sound/billy9.mp3")) // Adjust path to your sound file
+    {
+        std::cerr << "Failed to load sound!" << std::endl;
+        return -1;
+    }
+
+    // Create a sound object
+    sf::Sound sound(buffer);
+
+    // Record the start time
+    auto startTime = std::chrono::steady_clock::now();
+    bool soundPlayed = false;
+
 
     // run the program as long as the window is open
     while (window.isOpen())
@@ -19,6 +54,18 @@ int main()
             }
         }
 
+        // Calculate elapsed time
+        auto elapsedTime = std::chrono::steady_clock::now() - startTime;
+        if (std::chrono::duration_cast<std::chrono::seconds>(elapsedTime).count() >= 1)
+        {
+            // Play the sound after 3 seconds
+            if (sound.getStatus() != sf::Sound::Status::Playing && !soundPlayed)
+            {
+                sound.play();
+                soundPlayed = true;
+            }
+        }
+
         // The below window.clear/draw/display cycle is the heart of the engine and viewing movement
         
         /**
@@ -29,10 +76,10 @@ int main()
          */
 
         // clear the window with green color
-        window.clear(sf::Color::Green);
+        window.clear(sf::Color::Black);
 
         // draw everything here
-        // window.draw(...);
+        window.draw(text);
 
         // end the current frame
         window.display();
